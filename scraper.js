@@ -20,12 +20,12 @@ axios.get(url).then(res => {
   const knwlInstance = new Knwl('english'); // setting language as english for HTML
   knwlInstance.init(text); // scans page for common info types (phone, email, etc)
 
-  // company details
+  // company details, returns an array of info types using knwl
   const emails = knwlInstance.get('emails');
   const addresses = knwlInstance.get('places');
   const phones = knwlInstance.get('phones');
 
-  // mapping information found as a dictionary / output
+  // mapping information found as an array / output
   console.log("Phones:", phones.map(p => p.phone));
   console.log("Emails:", emails.map(e => e.address));
   console.log("Addresses:", addresses.map(a => a.place));
