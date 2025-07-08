@@ -32,45 +32,44 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     // Extract arrays of detected info using Knwl
     const emails = knwlInstance.get('emails');
     const phones = knwlInstance.get('phones');
-    const addresses = knwlInstance.get('places');
+    //const addresses = knwlInstance.get('places');
     
 
-    // Experimenting with regex
-    // const addressesFromHTML = [];
-    
-    // // extracting from the address tag
-    // $('address').each((i, el) => {
-    //   addressesFromHTML.push($(el).text().trim());
-    // });
-    
+    const addressesFromHTML = [];
 
-    // $('body').find('*').each((i, el) => {
-    //     const elText = $(el).text().trim();
-        
-    //     // Pattern for full address with city
-    //     const fullAddressPattern = /\b\d+\s+[A-Za-z0-9\s]+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b[^,]*,?\s*[A-Za-z\s]*,?\s*(?:[A-Z]{2}|[A-Za-z\s]+)\s*\d{5}(?:-\d{4})?/i;
-        
-    //     // Pattern for street address only
-    //     const streetAddressPattern = /\b\d+\s+[A-Za-z0-9\s]+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b/i;
-        
-    //     // Extract the address match
-    //     const fullMatch = elText.match(fullAddressPattern);
-    //     const streetMatch = elText.match(streetAddressPattern);
-        
-    //     if (fullMatch) {
-    //         addressesFromHTML.push(fullMatch[0].trim());
-    //     } else if (streetMatch) {
-    //         addressesFromHTML.push(streetMatch[0].trim());
-    //     }
-    // });
+    // extract addresses from <address> tags
+    $('address').each((i, el) => {
+      addressesFromHTML.push($(el).text().trim());
+    });
+
+    // run through all elements, exlude if it is script or style
+    $('body').find('*').each((i, el) => {
+      if ($(el).is('script, style')) return; // skip script & style tags
+
+      const elText = $(el).text().trim();
+
+      // ignore very short, empty text or text containing { or :
+      if (elText.length < 10 || elText.includes('{') || elText.includes(':')) return;
+
+      // pattern for addresses
+      const addressPattern = /\b\d+\s+[A-Z][a-zA-Z0-9]*(?:\s+[A-Z][a-zA-Z0-9]*)*\s+(Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b[^\n,]*/i;
 
 
-    
+      const match = elText.match(addressPattern);
 
-    // Map and display extracted information
-    console.log("Phones:", phones.map(p => p.phone));
-    console.log("Emails:", emails.map(e => e.address));
-    console.log("Addresses:", addresses.map(a => a.place));
+      if (match) {
+        addressesFromHTML.push(match[0].trim());
+      }
+    });
+
+    // remove duplicates
+    const uniqueAddresses = [...new Set(addressesFromHTML)];
+    const uniqueEmails = [...new Set(emails.map(e => e.address))];
+    const uniquePhones = [...new Set(phones.map(p => phone))];
+
+    console.log("Phones:", uniquePhones);
+    console.log("Emails:", uniqueEmails);
+    console.log("Addresses:", uniqueAddresses);
 
   } catch (err) {
     console.error(`Failed to connect to ${url}`, err.response?.status || err.message);
