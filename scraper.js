@@ -65,7 +65,7 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     // remove duplicates
     const uniqueAddresses = [...new Set(addressesFromHTML)];
     const uniqueEmails = [...new Set(emails.map(e => e.address))];
-    const uniquePhones = [...new Set(phones.map(p => phone))];
+    const uniquePhones = [...new Set(phones.map(p => p.phone))];
 
     console.log("Phones:", uniquePhones);
     console.log("Emails:", uniqueEmails);
