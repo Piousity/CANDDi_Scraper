@@ -27,11 +27,12 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     const text = $('body').text(); // extracts all plain text from the body tag
 
     const knwlInstance = new Knwl('english'); // setting language as English
+    //console.log(text); // debug
     knwlInstance.init(text); // scans page for common info types (phone, email, etc)
 
     // Extract arrays of detected info using Knwl
     const emails = knwlInstance.get('emails');
-    const phones = knwlInstance.get('phones');
+   // const phones = knwlInstance.get('phones');
     //const addresses = knwlInstance.get('places');
     
 
@@ -62,10 +63,30 @@ const url = `https://${website}`; // creating url using email domain - can be sw
       }
     });
 
+    const phonesFromHTML = [];
+
+    // extract addresses from <address> tags
+    $('body').find('*').each((i, el) => {
+      if ($(el).is('script, style')) return;
+
+      const elText = $(el).text().trim();
+      if (elText.length < 11 || elText.includes('#') || elText.includes(':') || elText.includes("'") || elText.length > 12) return;
+
+      const phonePattern = /(?:\+44\s?|\(?0)\d{3,5}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}/g;
+      const matches = elText.match(phonePattern);
+
+      if (matches) {
+        matches.forEach(phone => phonesFromHTML.push(phone.trim()));
+      }
+    });
+
+
+
     // remove duplicates
     const uniqueAddresses = [...new Set(addressesFromHTML)];
     const uniqueEmails = [...new Set(emails.map(e => e.address))];
-    const uniquePhones = [...new Set(phones.map(p => p.phone))];
+    const uniquePhones = [...new Set(phonesFromHTML)];
+    //const uniquePhones = [...new Set(phones.map(p => p.phones))];
 
     console.log("Phones:", uniquePhones);
     console.log("Emails:", uniqueEmails);
