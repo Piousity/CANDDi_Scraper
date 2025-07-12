@@ -1,0 +1,27 @@
+[
+    {
+        "url": "https://sthelensflooring.com",
+        "expected": {
+            "phones": ["01744 907387"],
+            "emails": ["sales@sthelensflooring.com"],
+            "addresses": ["Merton Bank Road, WA9 1HZ"]
+        }
+    },
+    {
+        "url": "https://canddi.com",
+        "expected": {
+            "phones": [],
+            "emails": ["hello@canddi.com"],
+            "addresses": ["47 Newton Street, Manchester, M1 1FT"]
+        }
+    },
+    {
+        "url": "https://www.westsidenw.co.uk/",
+        "expected": {
+            "phones": ["01744 413417"],
+            "emails": ["info@westsidenw.co.uk"],
+            "addresses": ["Unit 10 Westside Industrial Estate, Jackson St, St Helens Merseyside, WA9 3AT"]
+        }
+    }
+
+]

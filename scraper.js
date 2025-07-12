@@ -2,6 +2,18 @@ const cheerio = require('cheerio'); // parsing html
 const Knwl = require('knwl.js'); // for getting company info
 const axios = require('axios'); // for https requests
 
+const phonesFromHTML = [];
+const addressesFromHTML = [];
+const mediaLinksFromHTML = new Set();
+
+
+// REGEX
+const addressRegex = /(?:\b\d+\s+[A-Z][a-zA-Z0-9]*(?:\s+[A-Z][a-zA-Z0-9]*)*\s+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b)|(?:\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}\b)/gi;
+const phoneRegex = /(?:\+44\s?|\(?0)\d{3,5}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}/g;
+const mediaRegex = /https?:\/\/(?:www\.)?(?:facebook\.com|instagram\.com|twitter\.com|x\.com)\/[A-Za-z0-9_.-]+/gi;
+
+
+
 // User inputs email, then the email has input validation and checks if it includes '@'
 const emailInput = process.argv[2];
 if (!emailInput || !emailInput.includes('@')) {
@@ -25,72 +37,75 @@ const url = `https://${website}`; // creating url using email domain - can be sw
 
     const $ = cheerio.load(res.data); // receiving the data and parsing it
     const text = $('body').text(); // extracts all plain text from the body tag
-
     const knwlInstance = new Knwl('english'); // setting language as English
-    //console.log(text); // debug
     knwlInstance.init(text); // scans page for common info types (phone, email, etc)
 
-    // Extract arrays of detected info using Knwl
     const emails = knwlInstance.get('emails');
-   // const phones = knwlInstance.get('phones');
-    //const addresses = knwlInstance.get('places');
-    
-
-    const addressesFromHTML = [];
-
     // extract addresses from <address> tags
     $('address').each((i, el) => {
       addressesFromHTML.push($(el).text().trim());
     });
 
     // run through all elements, exlude if it is script or style
+    // ADDRESSES
     $('body').find('*').each((i, el) => {
       if ($(el).is('script, style')) return; // skip script & style tags
 
       const elText = $(el).text().trim();
-
       // ignore very short, empty text or text containing { or :
       if (elText.length < 10 || elText.includes('{') || elText.includes(':')) return;
-
-      // pattern for addresses
-      const addressPattern = /\b\d+\s+[A-Z][a-zA-Z0-9]*(?:\s+[A-Z][a-zA-Z0-9]*)*\s+(Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b[^\n,]*/i;
-
-
-      const match = elText.match(addressPattern);
-
+      const match = elText.match(addressRegex);
       if (match) {
         addressesFromHTML.push(match[0].trim());
-      }
-    });
+      }});
+  
 
-    const phonesFromHTML = [];
-
-    // extract addresses from <address> tags
+    // PHONES
     $('body').find('*').each((i, el) => {
       if ($(el).is('script, style')) return;
 
       const elText = $(el).text().trim();
       if (elText.length < 11 || elText.includes('#') || elText.includes(':') || elText.includes("'") || elText.length > 12) return;
-
-      const phonePattern = /(?:\+44\s?|\(?0)\d{3,5}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}/g;
-      const matches = elText.match(phonePattern);
-
+      
+      const matches = elText.match(phoneRegex);
       if (matches) {
         matches.forEach(phone => phonesFromHTML.push(phone.trim()));
       }
     });
 
+    // MEDIA LINKS
+    $('body').find('*').each((i, el) => {
+      if ($(el).is('script, style')) return;
+
+      // Check text 
+      const elText = $(el).text().trim();
+      if (elText) {
+        const textMatches = elText.match(mediaRegex);
+        if (textMatches) {
+          textMatches.forEach(link => mediaLinksFromHTML.add(link.trim()));
+        }
+      }
+
+      // Check href
+      const href = $(el).attr('href');
+      if (href) {
+        const hrefMatches = href.match(mediaRegex);
+        if (hrefMatches) {
+          hrefMatches.forEach(link => mediaLinksFromHTML.add(link.trim()));
+        }
+      }
+    });
 
 
     // remove duplicates
     const uniqueAddresses = [...new Set(addressesFromHTML)];
-    const uniqueEmails = [...new Set(emails.map(e => e.address))];
     const uniquePhones = [...new Set(phonesFromHTML)];
-    //const uniquePhones = [...new Set(phones.map(p => p.phones))];
-
+    const uniqueEmails = [...new Set(emails.map(e => e.address))];
+  
     console.log("Phones:", uniquePhones);
     console.log("Emails:", uniqueEmails);
-    console.log("Addresses:", uniqueAddresses);
+    console.log("Addresses/Postcodes:", uniqueAddresses);
+    console.log("Social Media Links:", mediaLinksFromHTML);
 
   } catch (err) {
     console.error(`Failed to connect to ${url}`, err.response?.status || err.message);
