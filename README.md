@@ -3,15 +3,13 @@ CANDDi Technical Task - for scraping a website taken from an email domain. ONLY 
 
 # Technologies Used
 - Javascript
-- Node.js (package manager)
+- Node.js (JS runtime)
 - Axios (for http requests)
 - Cheerio (to find data like emails/phones)
 - Regular Expression (for pattern matching)
 
 # Installation
-```git clone https://github.com/your-username/contact-info-scraper.git```
-```cd contact-info-scraper```
-```npm install```
+<pre lang="markdown"> ```bash git clone https://github.com/piousity/CANDDI_Scraper.git cd contact-info-scraper npm install ``` </pre>
 
 # Usage
 ```node scraper.js someone@example.com```
