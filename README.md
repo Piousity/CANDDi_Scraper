@@ -9,20 +9,24 @@ CANDDi Technical Task - for scraping a website taken from an email domain. ONLY 
 - Regular Expression (for pattern matching)
 
 # Installation
-```bash git clone https://github.com/piousity/CANDDI_Scraper.git
+```bash 
+git clone https://github.com/piousity/CANDDI_Scraper.git
 cd CANDDI_Scraper
-npm install```
+npm install
+```
 
 # Usage
-node scraper.js someone@example.com
+```node scraper.js someone@example.com```
 - You MUST input a valid email as an argument.
 
 # Output
+```bash
 Successfully fetched https://example.com
-Phones: [ '01111 111111` ]
-Emails: [ 'example@example.com' 
-Addresses/Postcodes: [ '123 Example, M1 1OO' ]```
-Social Media Links: Set { 'https://www.facebook.com/example.com' }```
+Phones: [ '01111 111111` }
+Emails: [ 'example@example.com' }
+Addresses/Postcodes: [ '123 Example, M1 1OO' }
+Social Media Links: Set { 'https://www.facebook.com/example.com' }
+```
 
 # Notes
 Only works on static pages. Only picks up British phone numbers
