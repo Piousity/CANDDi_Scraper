@@ -9,9 +9,9 @@ CANDDi Technical Task - for scraping a website taken from an email domain. ONLY 
 - Regular Expression (for pattern matching)
 
 # Installation
-```bash git clone https://github.com/piousity/CANDDI_Scraper.git``` 
-```cd CANDDI_Scraper``` 
-```npm install ```
+```bash git clone https://github.com/piousity/CANDDI_Scraper.git
+```cd CANDDI_Scraper 
+```npm install
 
 # Usage
 ```node scraper.js someone@example.com```
