@@ -4,7 +4,7 @@ const axios = require('axios'); // for https requests
 
 const phonesFromHTML = [];
 const addressesFromHTML = [];
-const mediaLinksFromHTML = new Set();
+const mediaLinksFromHTML = [];
 
 
 // REGEX
@@ -42,10 +42,6 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     knwlInstance.init(text); // scans page for common info types (phone, email, etc)
     const emails = knwlInstance.get('emails'); // finding emails
 
-    // extract addresses from <address> tags
-    $('address').each((i, el) => {
-      addressesFromHTML.push($(el).text().trim());
-    });
 
     // run through all elements, exclude if it is script or style
     // ADDRESSES
@@ -83,7 +79,7 @@ const url = `https://${website}`; // creating url using email domain - can be sw
       if (elText) {
         const textMatches = elText.match(mediaRegex);
         if (textMatches) {
-          textMatches.forEach(link => mediaLinksFromHTML.add(link.trim()));
+          textMatches.forEach(link => mediaLinksFromHTML.push(link.trim()));
         }
       }
 
@@ -92,7 +88,7 @@ const url = `https://${website}`; // creating url using email domain - can be sw
       if (href) {
         const hrefMatches = href.match(mediaRegex);
         if (hrefMatches) {
-          hrefMatches.forEach(link => mediaLinksFromHTML.add(link.trim()));
+          hrefMatches.forEach(link => mediaLinksFromHTML.push(link.trim()));
         }
       }
     });
@@ -102,11 +98,12 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     const uniqueAddresses = [...new Set(addressesFromHTML)];
     const uniquePhones = [...new Set(phonesFromHTML)];
     const uniqueEmails = [...new Set(emails.map(e => e.address))];
+    const uniqueMedia = [...new Set(mediaLinksFromHTML)];
   
     console.log("Phones:", uniquePhones);
     console.log("Emails:", uniqueEmails);
     console.log("Addresses/Postcodes:", uniqueAddresses);
-    console.log("Social Media Links:", mediaLinksFromHTML);
+    console.log("Social Media Links:", uniqueMedia);
 
   } catch (err) {
     console.error(`Failed to connect to ${url}`, err.response?.status || err.message);
