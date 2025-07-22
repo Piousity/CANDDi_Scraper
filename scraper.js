@@ -10,7 +10,7 @@ const mediaLinksFromHTML = new Set();
 // REGEX
 const addressRegex = /(?:\b\d+\s+[A-Z][a-zA-Z0-9]*(?:\s+[A-Z][a-zA-Z0-9]*)*\s+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b)|(?:\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}\b)/gi;
 const phoneRegex = /(?:\+44\s?|\(?0)\d{3,5}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}/g;
-const mediaRegex = /https?:\/\/(?:www\.)?(?:facebook\.com|instagram\.com|twitter\.com|x\.com)\/[A-Za-z0-9_.-]+/gi;
+const mediaRegex = /https?:\/\/(?:www\.)?(?:facebook\.com|instagram\.com|twitter\.com|x\.com|youtube\.com)\/[A-Za-z0-9_.-]+/gi;
 
 
 
@@ -37,16 +37,17 @@ const url = `https://${website}`; // creating url using email domain - can be sw
 
     const $ = cheerio.load(res.data); // receiving the data and parsing it
     const text = $('body').text(); // extracts all plain text from the body tag
+    
     const knwlInstance = new Knwl('english'); // setting language as English
     knwlInstance.init(text); // scans page for common info types (phone, email, etc)
+    const emails = knwlInstance.get('emails'); // finding emails
 
-    const emails = knwlInstance.get('emails');
     // extract addresses from <address> tags
     $('address').each((i, el) => {
       addressesFromHTML.push($(el).text().trim());
     });
 
-    // run through all elements, exlude if it is script or style
+    // run through all elements, exclude if it is script or style
     // ADDRESSES
     $('body').find('*').each((i, el) => {
       if ($(el).is('script, style')) return; // skip script & style tags
@@ -77,7 +78,7 @@ const url = `https://${website}`; // creating url using email domain - can be sw
     $('body').find('*').each((i, el) => {
       if ($(el).is('script, style')) return;
 
-      // Check text 
+      // check text 
       const elText = $(el).text().trim();
       if (elText) {
         const textMatches = elText.match(mediaRegex);
@@ -86,7 +87,7 @@ const url = `https://${website}`; // creating url using email domain - can be sw
         }
       }
 
-      // Check href
+      // check href
       const href = $(el).attr('href');
       if (href) {
         const hrefMatches = href.match(mediaRegex);
