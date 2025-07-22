@@ -10,7 +10,7 @@ const mediaLinksFromHTML = [];
 // REGEX
 const addressRegex = /(?:\b\d+\s+[A-Z][a-zA-Z0-9]*(?:\s+[A-Z][a-zA-Z0-9]*)*\s+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Boulevard|Blvd\.?|Place|Pl\.?|Court|Ct\.?|Circle|Cir\.?|Parkway|Pkwy\.?|Terrace|Ter\.?|Square|Sq\.?)\b)|(?:\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}\b)/gi;
 const phoneRegex = /(?:\+44\s?|\(?0)\d{3,5}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}/g;
-const mediaRegex = /https?:\/\/(?:www\.)?(?:facebook\.com|instagram\.com|twitter\.com|x\.com|youtube\.com)\/[A-Za-z0-9_.-]+/gi;
+const mediaRegex = /https?:\/\/(?:www\.)?(?:facebook\.com|instagram\.com|twitter\.com|x\.com|youtube\.com|linkedin\.com)\/[A-Za-z0-9_.-]+/gi;
 
 
 
