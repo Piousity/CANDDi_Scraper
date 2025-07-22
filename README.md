@@ -10,7 +10,7 @@ CANDDi Technical Task - for scraping a website taken from an email domain. ONLY 
 
 # Installation
 ```bash 
-git clone https://github.com/piousity/CANDDI_Scraper.git
+git clone https://github.com/piousity/CANDDi_Scraper.git
 cd CANDDI_Scraper
 npm install
 ```
